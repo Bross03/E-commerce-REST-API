@@ -17,5 +17,11 @@
   "bugs": {
     "url": "https://github.com/Bross03/E-commerce-REST-API/issues"
   },
-  "homepage": "https://github.com/Bross03/E-commerce-REST-API#readme"
+  "homepage": "https://github.com/Bross03/E-commerce-REST-API#readme",
+  "dependencies": {
+    "bcrypt": "^5.0.1",
+    "body-parser": "^1.20.0",
+    "cors": "^2.8.5",
+    "pg-promise": "^10.11.1"
+  }
 }

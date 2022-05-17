@@ -1,19 +1,21 @@
-const client= require('./db');
+const pool= require('./db');
 
 
-(async()=>{
+module.exports=async function dbQuery(query,params){  
+    try{
+        let result;
+        if(params){
+            result=await pool.query(query,params);
+        }else{
+            result=await pool.query(query)
+        }
+        return result;
+    }catch(err){
+        console.log(err);
+        return err;
+    }
     
-await client.connect();
-client.query(`SELECT * FROM users`, (err, res)=>{
-        if(!err){
-            console.log(res.rows);
-        }
-        else{
-            console.log(err.message);
-        }
-
-client.end();
-})})();
+}
 // client.connect();
 // client.query(`INSERT INTO users 
 // VALUES($1, $2, $3, $4, $5, $6, $7)`,[1,'jpbrossel@hotmail.com','hey', 'j', 'bross', {'hey':'hey'},{'hey':'hey'} ], (err, res)=>{
