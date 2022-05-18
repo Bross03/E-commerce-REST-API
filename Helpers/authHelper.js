@@ -2,10 +2,13 @@ const bcrypt=require('bcrypt');
 const res = require('express/lib/response');
 const userHelper=require('./userHelper.js');
 const userHelperInstance= new userHelper();
+const saltRounds=10;
 
 module.exports= class AuthHelpers{
     async register(data){
         const {email}=data;
+        data.password=await this.passwordHash(data.password, saltRounds);
+        console.log(data.password);
         try{
             const user=await userHelperInstance.findUserByEmail(email);
             if(user){
@@ -13,6 +16,24 @@ module.exports= class AuthHelpers{
             }
             const newUser= await userHelperInstance.createUser(data);
             return newUser;
+        }catch(err){
+            return err;
+        }
+    };
+
+    async login(data){
+        const {email,password}=data;
+
+        try{
+            const user=await userHelperInstance.findUserByEmail(email);
+            
+            if(!user){
+                return false;
+            }
+            if(!this.comparePasswords(password, user.password)){
+                return false;
+            }
+            return user;
         }catch(err){
             return err;
         }
@@ -26,5 +47,17 @@ module.exports= class AuthHelpers{
             console.log(err);
         }
         return null;
+    };
+
+    async comparePasswords(password, hash){
+        try{
+            const matchFound= await bcrypt.compare(password, hash);
+            console.log(matchFound);
+            return matchFound;
+        }catch(err){
+            console.log(err);
+        }
+        return false;
     }
+
 }
