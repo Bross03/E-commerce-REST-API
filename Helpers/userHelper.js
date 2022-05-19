@@ -1,4 +1,6 @@
-const dbQuery=require('./../dbQueries.js')
+const dbQuery=require('./../dbQueries.js');
+const password=require('./../util/util.js')
+const passwordHandler= new password();
 const pgp = require('pg-promise')({ capSQL: true });
 
 
@@ -37,5 +39,23 @@ module.exports=class userHelper{
         const newUserId = largestId.rows[0].max + 1;
         console.log(newUserId);
         return newUserId
+    };
+
+    async updateUser(id, data){
+        try{
+            console.log(data);
+            if(data.password){
+                data.password=await passwordHandler.passwordHash(data.password);
+            }
+            const condition= pgp.as.format("WHERE id = ${id};", {id});
+            const query= pgp.helpers.update(data,null,'users')+ " " +condition;
+    
+            const updatedUser=await dbQuery(query);
+            return updatedUser;
+    
+            }catch(err){
+                console.log(err);
+                return err;
+            }
     }
 }

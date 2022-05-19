@@ -18,8 +18,16 @@ module.exports=(app)=>{
             res.status(500).send("user not found");
         }
     });
-    router.post('/',(req,res,next)=>{
-        res.send('posting new user')
+    router.put('/:id',async (req,res,next)=>{
+        if(req.params.id==req.session.passport?.user){
+            try{
+                const updatedUser=await userHelperInstance.updateUser(req.params.id, req.body);
+                res.status(200).send(updatedUser);
+            }catch(err){
+                res.status(500).send(err)
+            }
+        }else{
+            res.status(500).send('You must be logged in to update a user')
+        }
     })
-    
 }
