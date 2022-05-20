@@ -26,7 +26,7 @@ module.exports=(app)=>{
             if(req.session.passport){
                 // const data = req.body;
                 // console.log(data);
-                console.log("aaaaa")
+                
                 const response = await cartHelperInstance.createCart(req.session.passport.user);
                 console.log(response);
                 if(response){
@@ -43,10 +43,15 @@ module.exports=(app)=>{
     });
 
     //post items in a cart
-    router.post('/mine',(req,res,next)=>{
+    router.post('/mine',async (req,res,next)=>{
         try{
             if(req.session.passport){
-
+                console.log("aaaaaaaaaaaaaaaaaaaa");
+                const data=req.body;
+                console.log(data);
+                const result = await cartHelperInstance.addItemToCart(data, req.session.passport.user);
+                console.log(result);
+                res.status(200).send('Item successfully added to the cart')
             }else{
                 res.status(500).send('You must be logged in to add items to a cart')
             }

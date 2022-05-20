@@ -1,4 +1,4 @@
-const e = require('cors');
+
 const express=require('express');
 const router=express.Router();
 const productHelper=require('./../Helpers/productHelper.js');

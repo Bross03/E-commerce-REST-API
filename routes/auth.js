@@ -1,7 +1,5 @@
 const express = require('express');
-const { send } = require('express/lib/response');
 const router=express.Router();
-
 
 const AuthHelper=require('./../Helpers/authHelper.js')
 const authHelperInstance=new AuthHelper();
@@ -17,7 +15,6 @@ module.exports=(app, passport)=>{
             res.status(200).send(response);
 
         }catch(err){
-            //console.log(err);
             res.status(500).send(err)
         }
         
