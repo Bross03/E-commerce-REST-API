@@ -2,6 +2,8 @@ const express=require('express');
 const router=express.Router();
 const cartHelper=require('./../Helpers/cartHelpers.js');
 const cartHelperInstance= new cartHelper();
+const orderHelper=require('./../Helpers/ordersHelper.js');
+const orderHelperInstance= new orderHelper();
 
 module.exports=(app)=>{
     app.use('/cart', router)
@@ -59,6 +61,25 @@ module.exports=(app)=>{
             res.status(500).send(err);
         }
     });
+    router.post('/mine/checkout',async (req,res,next)=>{
+     
+        try{
+            if(req.session.passport){
+                const totalPrice=await cartHelperInstance.getTotalCartPrice(req.session.passport.user);
+    
+                const newOrder=await orderHelperInstance.createOrder(totalPrice, req.session.passport.user);
+             
+                if(newOrder){
+                    await orderHelperInstance.deleteCartAndCartItems(req.session.passport.user);
+                }
+                res.sendStatus(200);
+            }else{
+                res.status(500).send('You must be logged in to add items to checkout')
+            }
+        }catch(err){
+            res.status(500).send(err)
+        }
+    })
 
     
 }

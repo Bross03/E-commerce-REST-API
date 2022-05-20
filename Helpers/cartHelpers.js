@@ -44,14 +44,12 @@ module.exports=class cartHelper{
 
     async addItemToCart(data, user_id){
         const {name,qty} =data;
-        console.log(data);
-        console.log('skjdsakjsabdkjash');
         const id = await utilInstance.createNewId('cart_items');
-        console.log('id is '+id);
+
         const product_id=await productHelperInstance.getProductIdByName(name);
-        console.log('product_id is '+product_id);
+
         const itemExists = await this.cartHasItem(product_id, user_id);
-        console.log(itemExists);
+
 
         if(!itemExists){
             console.log("heeeey");
@@ -67,25 +65,22 @@ module.exports=class cartHelper{
             const cartUpdate={
                 "modified": timeNow
             };
-            console.log(timeNow)
-            console.log(cartUpdate);
+           
             const condition=pgp.as.format("WHERE id = ${user_id};", {user_id});
-            console.log(condition);
+
             const queryCart= pgp.helpers.update(cartUpdate,null,'carts')+ " " +condition;
-            console.log(queryCart);
+            
             await dbQuery(queryCart);
             const queryCartItems=pgp.helpers.insert(cart_item,null,'cart_items');
             const createdCartItem=await dbQuery(queryCartItems);
-            console.log(createdCartItem);
+ 
             return createdCartItem;
         }else{
             console.log("xxxx");
             const result=await dbQuery("SELECT qty FROM cart_items WHERE id=$1;", [itemExists]);
             let qtyNew=result.rows[0].qty+parseInt(qty);
-            console.log("quantity is "+qtyNew);
-            console.log(itemExists);
             const condition = pgp.as.format("WHERE id = ${itemExists};", {itemExists});
-            console.log(condition);
+            
             const quantityUpdate={
                 'qty':qtyNew
             };
@@ -95,4 +90,18 @@ module.exports=class cartHelper{
             return createdCartItem;
         }
     };
+    
+    async getTotalCartPrice(user_id){
+        const statement=`SELECT qty, product_id FROM cart_items WHERE cart_id=$1`;
+        const result =await dbQuery(statement,[user_id]);
+        console.log(result.rows);
+        console.log(result.rows.length);
+        let sum=0;
+        for(let i=0;i<result.rows.length;i++){
+            const priceItem= await productHelperInstance.getPriceById(result.rows[i].product_id);
+            sum = sum + (priceItem*result.rows[i].qty);
+        }
+        console.log(sum);
+        return sum;
+    }
 }

@@ -55,5 +55,22 @@ module.exports=class productHelper{
             console.log(err);
             return err;
         }
+    };
+    async getPriceById(id){
+        try{
+            const statement=`SELECT price FROM products WHERE id=$1`;
+            const price=await dbQuery(statement,[id]);
+            if(price.rows?.length){
+               
+                const intPrice=parseInt(price.rows[0].price);
+
+                return intPrice;
+            }else{
+                return null;
+            }
+        }catch(err){
+            console.log(err);
+            return err;
+        }
     }
 }
