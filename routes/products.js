@@ -8,7 +8,6 @@ module.exports=(app)=>{
     app.use('/products', router)
     
     router.get('/',async (req,res,next)=>{
-        console.log(req.session.passport);
         const products= await productHelperInstance.getAllProducts()
         res.send(products);
     });

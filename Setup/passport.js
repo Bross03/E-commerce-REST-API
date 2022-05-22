@@ -3,7 +3,7 @@ const LocalStrategy=require('passport-local');
 const AuthHelper=require('./../Helpers/authHelper.js');
 const AuthHelperInstance= new AuthHelper();
 
-module.exports=(app)=>{
+module.exports=async (app)=>{
     //setup passort
     app.use(passport.initialize());
     app.use(passport.session());

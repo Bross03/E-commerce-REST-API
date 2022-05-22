@@ -33,13 +33,10 @@ module.exports=class userHelper{
             return err;
         }
     };
-    // async createNewUserId(){
-    //     const largestId=await dbQuery("SELECT MAX(id) FROM users;");
-    //     console.log(largestId.rows[0].max);
-    //     const newUserId = largestId.rows[0].max + 1;
-    //     console.log(newUserId);
-    //     return newUserId
-    // };
+    async getAllUsers(){
+        const users=await dbQuery("SELECT * FROM users");
+        return users.rows;
+    };
 
     async updateUser(id, data){
         try{

@@ -64,6 +64,7 @@ module.exports=class orderHelper{
         }
     };
     async deleteCartAndCartItems(user_id){
+        try{
         const queryCart=`DELETE FROM carts WHERE user_id=$1;`;
         const queryCartItems=`DELETE FROM cart_items WHERE cart_id=$1;`;
 
@@ -71,5 +72,58 @@ module.exports=class orderHelper{
         await dbQuery(queryCart,[user_id]);
         
         return null;
+
+        }catch(err){
+            console.log(err);
+            return err;
+        }
+    };
+    async getAllOrders(){
+        try{
+        const orders=await dbQuery("SELECT * FROM orders");
+        return orders.rows;
+        }catch(err){
+            console.log(err);
+            return err;
+        }
+    };
+    async getOrderById(id){
+        const order= await dbQuery("SELECT * FROM orders WHERE id=$1", [id]);
+        if(order.rows?.length){
+            return order.rows[0];
+        }
+        return null;
+    };
+    async getOrderByUserId(user_id){
+        const order= await dbQuery("SELECT * FROM orders WHERE user_id=$1", [user_id]);
+        if(order.rows?.length){
+            return order.rows;
+        }
+        return null;
+    };
+    async updateOrder(status,id){
+        try{
+            const data={
+                "status":status,
+                "modified":moment.utc().toISOString()
+            };
+
+            const condition= pgp.as.format("WHERE id = ${id};", {id});
+            const query= pgp.helpers.update(data,null,'orders')+ " " +condition;
+    
+            await dbQuery(query);
+            const updatedOrder=await dbQuery("SELECT * FROM orders WHERE id=$1;",[id]);
+            console.log(updatedOrder);
+            if(updatedOrder.rows?.length){
+                console.log('aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa');
+                return updatedOrder.rows[0];
+            }
+
+            return null;
+
+            }catch(err){
+                return err;
+            }
     }
+
 }

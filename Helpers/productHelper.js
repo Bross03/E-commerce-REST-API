@@ -35,13 +35,6 @@ module.exports=class productHelper{
         return newProduct;
     };
 
-    // async createNewProductId(){
-
-    //     const largestId=await dbQuery("SELECT MAX(id) FROM products;");
-    //     const newProductId = largestId.rows[0].max + 1;
-    //     console.log(newProductId);
-    //     return newProductId;
-    // };
 
     async updateProduct(id, data){
         try{

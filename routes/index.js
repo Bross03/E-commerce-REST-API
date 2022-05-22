@@ -4,6 +4,7 @@ const ordersRouter=require('./orders.js');
 const cartRouter=require('./cart.js');
 const authRouter=require('./auth.js');
 
+//exporting all routers from a single file
 module.exports=(app,passport)=>{
     userRouter(app);
     productsRouter(app);

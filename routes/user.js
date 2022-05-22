@@ -7,8 +7,9 @@ const userHelperInstance= new userHelper();
 module.exports=(app)=>{
     app.use('/users', router)
     
-    router.get('/',(req,res,next)=>{
-        res.send('array of users')
+    router.get('/',async (req,res,next)=>{
+        const users= await userHelperInstance.getAllUsers()
+        res.send(users);
     });
     router.get('/:id',async (req,res,next)=>{
         const user=await userHelperInstance.findUserById(req.params.id);
@@ -29,5 +30,27 @@ module.exports=(app)=>{
         }else{
             res.status(500).send('You must be logged in to update a user')
         }
-    })
+    });
+    router.put('/mine',async (req,res,next)=>{
+        if(req.session.passport){
+            try{
+                const updatedUser=await userHelperInstance.updateUser(req.session.passport.user, req.body);
+                res.status(200).send(updatedUser);
+            }catch(err){
+                res.status(500).send(err)
+            }
+        }else{
+            res.status(500).send('You must be logged in to update a user')
+        }
+    });
+    router.get('/mine',async (req,res,next)=>{
+        if(req.session.passport){
+            const user=await userHelperInstance.findUserById(req.session.passport.user);
+            if(user){
+            res.send(user);
+            }else{
+                res.status(500).send();
+            }
+        }
+    });
 }
